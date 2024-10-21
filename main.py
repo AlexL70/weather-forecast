@@ -1,4 +1,5 @@
 import streamlit as st
+import plotly.express as px
 
 
 class DataKey:
@@ -18,3 +19,8 @@ if len(place) > 0:
         st.subheader(f"Temperature for the next {days} days in {place}")
     else:
         st.subheader(f"Sky condition for the next {days} days in {place}")
+    dates = ("2024-10-20", "2024-10-21", "2024-10-22")
+    temperatures = (6, 4, 7)
+    figure = px.line(x=dates, y=temperatures,
+                     labels={"x": "Temperature(C)", "y": "Date"})
+    st.plotly_chart(figure)
