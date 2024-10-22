@@ -1,11 +1,6 @@
 import streamlit as st
 import plotly.express as px
-from web_client import get_data
-
-
-class DataKey:
-    DK_TEMPERATURE = "Temperature"
-    DK_SKY = "Sky"
+from web_client import get_data, DataKey
 
 
 st.title("Weather Forecast for the Next 5 Days")
@@ -20,9 +15,20 @@ if len(place) > 0:
         st.subheader(f"Temperature for the next {days} days in {place}")
     else:
         st.subheader(f"Sky condition for the next {days} days in {place}")
-    dates = ("2024-10-20", "2024-10-21", "2024-10-22")
-    temperatures = (6, 4, 7)
-    data = get_data(place)
-    figure = px.line(x=dates, y=temperatures,
-                     labels={"x": "Temperature(C)", "y": "Date"})
-    st.plotly_chart(figure)
+    success, data = get_data(place, days, option)
+    if success:
+        x_data = [item["date"] for item in data]
+        match option:
+            case DataKey.DK_TEMPERATURE:
+                y_data = [item["temperature"] for item in data]
+                label_y = "Temperature(C)"
+                figure = px.line(x=x_data, y=y_data,
+                                 labels={"x": "Date", "y": label_y})
+                st.plotly_chart(figure)
+            case DataKey.DK_SKY:
+                y_data = [item["sky"] for item in data]
+                label_y = "Sky"
+                st.warning("The sky condition is under construction")
+
+    else:
+        st.error(data["message"])
